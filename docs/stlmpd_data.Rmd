@@ -1,0 +1,128 @@
+---
+title: "SLMPD Data Cleaning"
+author: "Carter Hanford"
+date: '(`r format(Sys.time(), "%B %d, %Y")`)'
+output: 
+  github_document: default
+  html_notebook: default 
+---
+
+## Introduction
+This is the R notebook for accessing data from the St. Louis Metropolitan Police Department.
+
+```{r}
+# load dependencies
+library(compstatr)
+library(dplyr)
+library(here)
+library(tidyr)
+library(readr)
+```
+
+## Load Data
+First we'll load the data from the **compstatr** package.
+
+```{r}
+# create index
+i = cs_create_index()
+
+# get years 
+may10 = cs_get_data(year = 2010, month = "May", index = i)
+may11 = cs_get_data(year = 2011, month = "May", index = i)
+may12 = cs_get_data(year = 2012, month = "May", index = i)
+may13 = cs_get_data(year = 2013, month = "May", index = i)
+may14 = cs_get_data(year = 2014, month = "May", index = i)
+may15 = cs_get_data(year = 2015, month = "May", index = i)
+may16 = cs_get_data(year = 2016, month = "May", index = i)
+may17 = cs_get_data(year = 2017, month = "May", index = i)
+may18 = cs_get_data(year = 2018, month = "May", index = i)
+```
+
+Next let's select each year and features we want and combine everything into one dataset:
+
+```{r}
+# select variables
+may10 %>%
+  select(month_reportedto_mshp, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may10
+
+may11 %>%
+  select(month_reportedto_mshp, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may11
+
+may12 %>%
+  select(month_reportedto_mshp, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may12
+
+may13 %>%
+  select(month_reportedto_mshp, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may13
+
+may14 %>%
+  select(coded_month, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  rename(month_reportedto_mshp = coded_month) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may14
+
+may15 %>%
+  select(coded_month, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  rename(month_reportedto_mshp = coded_month) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may15
+
+may16 %>%
+  select(coded_month, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  rename(month_reportedto_mshp = coded_month) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may16
+
+may17 %>%
+  select(coded_month, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  rename(month_reportedto_mshp = coded_month) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may17
+
+may18 %>%
+  select(coded_month, crime, district, neighborhood, description, ileads_address, ileads_street) %>%
+  rename(month_reportedto_mshp = coded_month) %>%
+  unite(address, c(ileads_address, ileads_street), sep = " ") -> may18
+
+
+# combine all dataframes
+stlcrime <- rbind(may10, may11, may12,
+                 may13, may14, may15,
+                 may16, may17, may18)
+```
+
+Finally we'll filter for non-dangerous crimes only and then perform some organization:
+
+```{r}
+# filter for non-dangerous crimes
+stlcrime %>%
+  filter(description == "LOITERING-BEGGING" | description == "PUBLIC ORDER-OTHR UNSPC PBLC ORDER VIOLATION" | description == "LIQUOR LAWS-OTHR UNSPEC LIQ OFFNSE" | description == "DISORDERLY CONDUCT-PEACE DSTRB/INDIVIDUAL" | description == "DRUGS-POSSESSION/MARIJUANA" | description == "PUBLIC ORDER-TRESPASSING") -> stlcrime
+
+# organize
+stlcrime %>%
+  rename(year = month_reportedto_mshp) %>%
+  select(year, crime, district, neighborhood, address, description) -> stlcrime
+```
+
+And we'll write the cleaned STLMPD data to a csv:
+
+```{r}
+write_csv(stlcrime, here("data", "stlcrime.csv"))
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
