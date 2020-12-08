@@ -1,6 +1,6 @@
 ## Redlining & Policing 
 
-[![](https://img.shields.io/badge/project%20length-2019%202021-orange.svg)](https://github.com/CarterHanford/redlining-policing)
+[![](https://img.shields.io/badge/project%20length-Fall%2020-orange.svg)](https://github.com/CarterHanford/redlining-policing)
 [![](https://img.shields.io/badge/release-complete-brightgreen.svg)](https://github.com/CarterHanford/redlining-policing)
 [![](https://img.shields.io/github/repo-size/CarterHanford/redlining-policing.svg)](https://github.com/CarterHanford/redlining-policing)
 
